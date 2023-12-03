@@ -57,6 +57,12 @@ def makewordname( input ):
     else:
         return testnum +'_Anton_' + policynum + '.docx'
 """
+# importing os module
+import os
+# using getlogin() returning username (use instead of Anton?)
+print (os.getlogin())
+"""
+"""
 from screen import takescreenshoot
 from timestamp import timestamp 
 
