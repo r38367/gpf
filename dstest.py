@@ -1,13 +1,29 @@
 
 # Import Module
 from tkinter import *
- 
+from screen import *
+from timestamp import *
+from word import *
 
 nVer = '4.0'
+test = 0
+policy = 0
+wordname = ""
 
 def _take_button_pressed():
- 
-    res = "take clicked" 
+    global wordname 
+    _input_pressed( 0 )
+    t = timestamp()
+    jpg = makescreenshotname( t, txt.get() )
+    takescreenshoot( jpg )
+    print ( "wordname:" + wordname )
+    if not wordname == "":
+        
+        savetoword( wordname, t, jpg )
+        res = 'Saved to ' + wordname  
+    else:
+        res = 'Saved to ' + jpg  
+
     lbl.configure(text = res)
 
 def _open_button_pressed():
@@ -15,13 +31,20 @@ def _open_button_pressed():
     lbl.configure(text = res)
 
 def _input_pressed(event):
+    global wordname 
+    
     res = txt.get()
-    lbl.configure(text = res)
+    wordname = makewordname( res )
+    print ('wordname=', wordname)
+    lbl.configure(text = wordname)
 
 def on_window_resize(event):
     width = event.width
     height = event.height
     print(f"Window resized to {width}x{height}")
+
+
+
 
 # create window
 root = Tk()
