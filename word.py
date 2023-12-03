@@ -1,6 +1,6 @@
 from docx import Document
 from docx.shared import Mm
-  
+import re  
 
 def get_text_width(document):
     """
@@ -28,11 +28,31 @@ def savetoword( file, text, jpg):
 
     document.save(file)
 
+
 def makewordname( input ):
     if input == "" :
          return ""
     else: 
-        return 'Anton' + '.docx'
+         
+        # Find the first 4-digit number
+        four_digit = re.findall(r'\b\d{4}\b', input)
+        if not four_digit:
+            testnum = ""
+        else:
+            testnum = four_digit[0]
+        # Find the first 7-digit number
+        seven_digit = re.findall(r'\b\d00\d{4}\b', input )
+        if not seven_digit:
+            policynum = ""
+        else:
+            policynum = seven_digit[0]
+        
+        # Concatenate the two numbers
+        ret = testnum + policynum
+    if ret == "":
+        return ""
+    else:
+        return testnum +'_Anton_' + policynum + '.docx'
 """
 from screen import takescreenshoot
 from timestamp import timestamp 
