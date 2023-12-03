@@ -1,6 +1,8 @@
 
 # Import Module
 from tkinter import *
+import tkinter.messagebox as mb
+
 from screen import *
 from timestamp import *
 from word import *
