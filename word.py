@@ -26,7 +26,10 @@ def savetoword( file, text, jpg):
     document.paragraphs[-1].add_run().add_picture(jpg, Mm(get_text_width(document)) )
                         #width=Mm(document.sections[0].page_width - document.sections[0].left_margin - document.sections[0].right_margin)) 
 
-    document.save(file)
+    try: 
+            document.save(file)
+    except:
+            mb.showerror(title="Error", message="Can't save " + file + ".\nClose if open.")
 
 
 def makewordname( input ):
