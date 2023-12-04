@@ -1,7 +1,8 @@
 # Import Module
 from tkinter import *
 import tkinter.messagebox as mb
-import os
+import os, sys
+import time
 
 # ==============================================================================================================
 # create a timestamp in form dd.mm.yy hh:mm:ss 
@@ -34,7 +35,7 @@ def takescreenshoot( file ):
     screenshot.close()
 
 def makescreenshotname( t, text="screen" ):
-    subfolder=".\\screens"
+    subfolder=".\\screens" # if run not from folder - os.path.dirname(sys.argv[0]) +
     if not os.path.exists(subfolder):
         os.mkdir(subfolder)
 
@@ -120,60 +121,110 @@ def makewordname( input ):
             return ""
         else:
             return testnum +'_'+ extratext +'_' + policynum + '.docx'
-# importing os module
-# import os
-# using getlogin() returning username (use instead of Anton?)
-# print (os.getlogin())
+
+
 
 # ==============================================================================================================
-# Create GUI
+#  Call backs 
 # ==============================================================================================================
 
 nVer = '4.0'
 test = 0
 policy = 0
 wordname = ""
+jpg = ""
 
-def _take_button_pressed():
-    global wordname 
-    _input_pressed( 0 )
-    t = timestamp()
-    jpg = makescreenshotname( t, txt.get() )
-    takescreenshoot( jpg )
-    
-    if not wordname == "":
-        
-        savetoword( wordname, t, jpg )
-        res = 'Saved to ' + wordname  
-    else:
-        res = 'Saved to ' + jpg  
-
-    lbl.configure(text = res)
-
-def _open_button_pressed():
-    res = "open clicked" 
-    
-    # Show an information message box
-    mb.showinfo(title="Message", message=res)
-
-    
+# ==============================================================================================================
+#                   Input entered 
+# ==============================================================================================================
+   
 def _input_pressed(event):
     global wordname 
     
-    res = txt.get()
+    res = txt.get().strip()
     wordname = makewordname( res )
     
     lbl.configure(text = wordname)
 
-def on_window_resize(event):
-    width = event.width
-    height = event.height
+
+# ==============================================================================================================
+#                   Take button pressed 
+# ==============================================================================================================
+  
+_pressed = 0  # 0-not pressed, 1-short, 2-long
+
+def _change_label(event):
+    global _pressed
+    if _pressed == 1:
+        _pressed = 2
+        btn1.configure( text='Edit')
+
+     
+def _take_button_pressed( event ):
+    global _pressed
+    global _long
+
+    if _pressed == 0 :
+        _pressed = 1
+        _long = root.after(1000,_change_label,event)
+        
+
+def _take_button_released( event ):
+
+    global _pressed
+    global _long
+
+    #if short press
+    if _pressed == 1:
+        if _long:
+            root.after_cancel(_long)    # cancel long event
+
+    # take screenshot
+    global wordname 
+    global jpg
+
+    _input_pressed( 0 )
+    t = timestamp()
+    jpg = makescreenshotname( t, txt.get().strip() )
+    takescreenshoot( jpg )
+
+
+    # edit picture
+    if _pressed == 2:
+        os.system('"'+jpg+'"')
+       
+    _pressed = 0
+    btn1.configure( text='Take')
+
+    # save to word if needed 
+    if not wordname == "":
+        savetoword( wordname, t, jpg )
+        res = 'Saved to ' + wordname [-20:] 
+    else:
+        res = 'Saved to ' + jpg  [-20:]
+
+    lbl.configure(text = res)
+
+
+# ==============================================================================================================
+#                   Open button pressed 
+# ==============================================================================================================
+
+def _open_button_pressed():
+    res = "No file to show" 
     
+    if jpg == "":
+        # Show an information message box
+        mb.showinfo(title="Message", message=res)
+    else:
+        os.system('"'+jpg+'"')
 
 
 
+# ==============================================================================================================
+# Create GUI
+# ==============================================================================================================
 
-# create window
 root = Tk()
  
 #  windowSet  title 
@@ -221,16 +272,17 @@ lbl.grid(column =0, row =1,sticky=W, padx=5)
 #
 # Create button Take
 #
-btn = Button(root, text = "Take" ,
-             fg = "black", width=6, command=_take_button_pressed)
-btn.grid(column=1, row=0, padx=5)
-
+btn1 = Button(root, text = "Take" ,
+             fg = "black", width=6)
+btn1.grid(column=1, row=0, padx=5)
+btn1.bind('<Button-1>', _take_button_pressed)
+btn1.bind('<ButtonRelease-1>', _take_button_released)
 #
 # Create button Open
 #
-btn = Button(root, text = "Open" , width=6,
+btn2 = Button(root, text = "Open" , width=6,
              fg = "black", command=_open_button_pressed)
-btn.grid(column=2, row=0, padx=5)
+btn2.grid(column=2, row=0, padx=5)
 
 # Execute Tkinter
 root.mainloop()
