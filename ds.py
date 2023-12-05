@@ -199,9 +199,9 @@ def _take_button_released( event ):
     # save to word if needed 
     if not wordname == "":
         savetoword( wordname, t, jpg )
-        res = 'Saved to ' + wordname [-20:] 
+        res = 'Saved to ' + wordname  
     else:
-        res = 'Saved to ' + jpg  [-20:]
+        res = 'Saved to ' + jpg 
 
     lbl.configure(text = res)
 
@@ -211,14 +211,21 @@ def _take_button_released( event ):
 # ==============================================================================================================
 
 def _open_button_pressed():
-    res = "No file to show" 
-    
+        
     if jpg == "":
         # Show an information message box
-        mb.showinfo(title="Message", message=res)
+        mb.showinfo(title="Message", message="No file to show")
     else:
         os.system('"'+jpg+'"')
 
+# ==============================================================================================================
+#                   Clear button pressed 
+# ==============================================================================================================
+
+def _clear_button_pressed():
+    
+    txt.delete(0, END)
+    lbl.configure(text = "")
 
 
 # ==============================================================================================================
@@ -277,12 +284,21 @@ btn1 = Button(root, text = "Take" ,
 btn1.grid(column=1, row=0, padx=5)
 btn1.bind('<Button-1>', _take_button_pressed)
 btn1.bind('<ButtonRelease-1>', _take_button_released)
+
 #
 # Create button Open
 #
 btn2 = Button(root, text = "Open" , width=6,
              fg = "black", command=_open_button_pressed)
 btn2.grid(column=2, row=0, padx=5)
+
+#
+# Create button Clear
+#
+btn3 = Button(root, text = "Clear" , width=6+6+3,
+             fg = "black", command=_clear_button_pressed)
+btn3.grid(column=1, row=1, columnspan=2, padx=5)
+
 
 # Execute Tkinter
 root.mainloop()
