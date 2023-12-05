@@ -166,7 +166,7 @@ def _take_button_pressed( event ):
 
     if _pressed == 0 :
         _pressed = 1
-        _long = root.after(1000,_change_label,event)
+        _long = root.after(800,_change_label,event)
         
 
 def _take_button_released( event ):
@@ -210,13 +210,63 @@ def _take_button_released( event ):
 #                   Open button pressed 
 # ==============================================================================================================
 
-def _open_button_pressed():
+_pressed_open = 0  # 0-not pressed, 1-short, 2-long
+
+def _open_change_label(event):
+    global _pressed_open
+    if _pressed_open == 1:
+        _pressed_open = 2
+        btn2.configure( text='Word')
+
+     
+def _open_button_pressed( event ):
+    global _pressed_open
+    global _long
+
+    _input_pressed( 0 )
+    
+    if _pressed_open == 0 :
+        _pressed_open = 1
+        _long = root.after(800,_open_change_label,event)
         
-    if jpg == "":
-        # Show an information message box
-        mb.showinfo(title="Message", message="No file to show")
+
+def _open_button_released( event ):
+
+    global _pressed_open
+    global _long
+
+    #if short press
+    if _pressed_open == 1:
+        if _long:
+            root.after_cancel(_long)    # cancel long event
+
+    # open file
+    global wordname 
+    global jpg
+
+   
+    
+    # edit picture
+    if _pressed_open == 2:
+        
+        if os.path.isfile(wordname):
+            os.system('"'+ wordname +'"')
+        else:
+            # Show an information message box
+            mb.showinfo(title="Message", message="No word file to show")
+
     else:
-        os.system('"'+jpg+'"')
+         
+        if jpg == "":
+            # Show an information message box
+            mb.showinfo(title="Message", message="No image file to show")
+        else:
+            os.system('"'+jpg+'"')
+
+    _pressed_open = 0
+    btn2.configure( text='Open')
+    
+   
 
 # ==============================================================================================================
 #                   Clear button pressed 
@@ -279,8 +329,7 @@ lbl.grid(column =0, row =1,sticky=W, padx=5)
 #
 # Create button Take
 #
-btn1 = Button(root, text = "Take" ,
-             fg = "black", width=6)
+btn1 = Button(root, text = "Take" , width=6, fg = "black")
 btn1.grid(column=1, row=0, padx=5)
 btn1.bind('<Button-1>', _take_button_pressed)
 btn1.bind('<ButtonRelease-1>', _take_button_released)
@@ -288,10 +337,10 @@ btn1.bind('<ButtonRelease-1>', _take_button_released)
 #
 # Create button Open
 #
-btn2 = Button(root, text = "Open" , width=6,
-             fg = "black", command=_open_button_pressed)
+btn2 = Button(root, text = "Open" , width=6, fg = "black")
 btn2.grid(column=2, row=0, padx=5)
-
+btn2.bind('<Button-1>', _open_button_pressed)
+btn2.bind('<ButtonRelease-1>', _open_button_released)
 #
 # Create button Clear
 #
