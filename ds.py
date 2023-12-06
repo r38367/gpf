@@ -1,3 +1,15 @@
+
+
+# History
+#
+# v1
+# 03/12/23 add #1 open/edit jpg button  
+# 04/12/23 add #5 clear button
+# 05/12/23 add #4 open/edit word button
+# 05/12/23 add #11 clear with double click on label
+
+
+
 # Import Module
 from tkinter import *
 import tkinter.messagebox as mb
@@ -246,7 +258,7 @@ def _open_button_released( event ):
 
    
     
-    # edit picture
+    # open picture/word
     if _pressed_open == 2:
         
         if os.path.isfile(wordname):
@@ -272,11 +284,10 @@ def _open_button_released( event ):
 #                   Clear button pressed 
 # ==============================================================================================================
 
-def _clear_button_pressed():
+def _clear_button_pressed(event=0):
     
     txt.delete(0, END)
     lbl.configure(text = "")
-
 
 # ==============================================================================================================
 # Create GUI
@@ -319,12 +330,13 @@ root.attributes('-topmost',True)
 txt = Entry(root, width=40)
 txt.grid(column =0, row =0, padx=5, pady=5)
 txt.bind('<Return>', _input_pressed)
- 
+
 #
 # Create label 
 #
 lbl = Label(root, text = "Test:, Policy: ", anchor="w", justify="left")
 lbl.grid(column =0, row =1,sticky=W, padx=5)
+lbl.bind('<Double-1>', _clear_button_pressed) 
 
 #
 # Create button Take
@@ -344,9 +356,9 @@ btn2.bind('<ButtonRelease-1>', _open_button_released)
 #
 # Create button Clear
 #
-btn3 = Button(root, text = "Clear" , width=6+6+3,
+btn3 = Button(root, text = "Clear" , width=6,
              fg = "black", command=_clear_button_pressed)
-btn3.grid(column=1, row=1, columnspan=2, padx=5)
+btn3.grid(column=2, row=1, padx=5)
 
 
 # Execute Tkinter
