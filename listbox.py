@@ -18,25 +18,24 @@ def update_listbox ():
     # Clear the listbox
     listbox.delete (0, tk.END)
     # Get the input text
-    input_text = input_var.get ()
+    input_text = input_var.get ().strip()
     # Initialize a counter for the number of matching files
     count = 0
     # Loop through the files in the current folder
     for file in os.listdir ("."):
         # Check if the file name contains the input text
-        if input_text in file:
+        if all(file.upper().find(str) >= 0  for str in input_text.upper().split()):
             # Insert the file name into the listbox
             listbox.insert (tk.END, file)
             # Increment the counter
             count += 1
     # Resize the listbox height according to the counter
-    if count <= 1:
+    if count < 1:
         listbox.pack_forget()
-        top.iconify()
     else:
         listbox.pack()
     
-    listbox.config (height=count)
+    listbox.config (height=count,width=100)
     
 # Create a function to update the entry when press Return in listbox
 def update_entry (event):
@@ -76,7 +75,7 @@ def move_focus (event):
         listbox.selection_set (0)
 
 # Create an entry widget
-entry = tk.Entry (root, textvariable=input_var)
+entry = tk.Entry (root, textvariable=input_var, width=40)
 # Bind the entry widget to the update function
 entry.bind ("<KeyRelease>", lambda e: update_listbox ())
 # Bind the entry widget to the move focus function
