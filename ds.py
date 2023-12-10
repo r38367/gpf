@@ -10,6 +10,9 @@
 #
 # v2.0
 #   09/12/23 add #6 add file list in inout field
+#   10/12/23 merge #22 missing 'sceren' in screen file name
+#   10/12/23 fix #20 file not open, change file naming
+#   
 #
 
 nVer = '2.0'
@@ -50,10 +53,14 @@ def takescreenshoot( file ):
     # Close the screenshot
     screenshot.close()
 
-def makescreenshotname( t, text="screen" ):
+def makescreenshotname( t, text ):
+    
     subfolder=".\\screens" # if run not from folder - os.path.dirname(sys.argv[0]) +
     if not os.path.exists(subfolder):
         os.mkdir(subfolder)
+    
+    if not text:
+        text = "screen"
 
     return   subfolder + '\\' + t.replace(':','').replace(' ','_') + "_" + text +".png"
  
@@ -82,7 +89,6 @@ def savetoword( file, text, jpg):
         # Create a new document if it does not exist
         document = Document()
 
-    #document = Document('demo.docx')
     document.sections[0].left_margin = Mm(25)
     document.sections[0].right_margin = Mm(25)
 
@@ -97,48 +103,10 @@ def savetoword( file, text, jpg):
 
 def makewordname( input ):
     if input == "" :
-         return ""
+        return ""
     else: 
-         
-        # Find the first 4-digit number
-        four_digit = re.findall(r'\b\d{4}\b', input)
-        if not four_digit:
-            testnum = ""
-        else:
-            testnum = four_digit[0]
-        # Find the first 7-digit number
-        seven_digit = re.findall(r'\b\d00\d{4}\b', input )
-        if not seven_digit:
-            policynum = ""
-        else:
-            policynum = seven_digit[0]
-        
-        #find name for file 
-        #name can be anything not digits
-        # for example:
-        # 1234 6000313 this is a file name =this is a file name
-        # 1234 filename2 6000313 =filename2
-        # my file 6000313 2546 =my file
-        # 2456 6000313 G02056 =G02056
-        # 3333 anton 6000777 delete =
-        #
-        non_digit = re.findall(r'\b([^\d\s].*?)(?:\s+\d+)*$', input )
-        if not non_digit:
-            extratext = os.getlogin()
-            ext = ""
-        else:
-            extratext = non_digit[0]
-            ext = non_digit[0]
-        
-        # Concatenate the two numbers
-        ret = testnum + policynum + ext  
-        if ret == "":
-            return ""
-        else:
-            return testnum +'_'+ extratext +'_' + policynum + '.docx'
-
-
-
+        return input + '.docx'
+    
 # ==============================================================================================================
 #  Call backs 
 # ==============================================================================================================
@@ -351,9 +319,9 @@ def update_entry (event):
         file_name = listbox.get (listbox.curselection ())
         # hide listbox
         listbox.grid_remove()
-        # Set the input text to the file name
+        # Set the input text without .docx extension
         txt.delete(0, END)
-        txt.insert (0, file_name.replace('_',' ').rsplit('.',1)[0])
+        txt.insert (0, file_name.rsplit('.',1)[0])
         # Update the listbox
         #update_listbox ()
         
@@ -372,11 +340,14 @@ def update_entry (event):
 # Show the active entry from listbox in the input  
 # ==============================================================================================================
 def show_file_name (event):
-    # Get the selected file name from the listbox
-    file_name = listbox.get (listbox.curselection ())
-    # Set the input text to the file name
-    txt.delete(0, END)
-    txt.insert (0, file_name.replace('_',' ').rsplit('.',1)[0])
+    #in case we do not have activ listbox selection keep text in input field
+    index = listbox.curselection ()
+    if index:
+        # Get the selected file name from the listbox
+        file_name = listbox.get (index)
+        # Set the input text without .docx extension
+        txt.delete(0, END)
+        txt.insert (0, file_name.rsplit('.',1)[0])
 
 # ==============================================================================================================
 #                   Listbox - move focus 
