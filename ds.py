@@ -2,13 +2,15 @@
 
 # History
 #
-# v1
-# 03/12/23 add #1 open/edit jpg button  
-# 04/12/23 add #5 clear button
-# 05/12/23 add #4 open/edit word button
-# 05/12/23 add #11 clear with double click on label
-
-
+# v1.0
+#   03/12/23 add #1 open/edit jpg button  
+#   04/12/23 add #5 clear button
+#   05/12/23 add #4 open/edit word button
+#   05/12/23 add #11 clear with double click on label
+# v1.1
+#   10/12/23 fix #22 missing 'sceren' in screen file name
+ 
+nVer = '1.1'
 
 # Import Module
 from tkinter import *
@@ -46,15 +48,14 @@ def takescreenshoot( file ):
     # Close the screenshot
     screenshot.close()
 
-def makescreenshotname( t, text="screen" ):
+def makescreenshotname( t, text ):
     subfolder=".\\screens" # if run not from folder - os.path.dirname(sys.argv[0]) +
     if not os.path.exists(subfolder):
         os.mkdir(subfolder)
-
+    if not text:
+        text ="screen"
     return   subfolder + '\\' + t.replace(':','').replace(' ','_') + "_" + text +".png"
-
-
-
+ 
 
 # ==============================================================================================================
 # working with word document 
@@ -140,7 +141,6 @@ def makewordname( input ):
 #  Call backs 
 # ==============================================================================================================
 
-nVer = '4.0'
 test = 0
 policy = 0
 wordname = ""
@@ -178,7 +178,7 @@ def _take_button_pressed( event ):
 
     if _pressed == 0 :
         _pressed = 1
-        _long = root.after(800,_change_label,event)
+        _long = root.after(700,_change_label,event)
         
 
 def _take_button_released( event ):
@@ -239,7 +239,7 @@ def _open_button_pressed( event ):
     
     if _pressed_open == 0 :
         _pressed_open = 1
-        _long = root.after(800,_open_change_label,event)
+        _long = root.after(700,_open_change_label,event)
         
 
 def _open_button_released( event ):
@@ -284,7 +284,7 @@ def _open_button_released( event ):
 #                   Clear button pressed 
 # ==============================================================================================================
 
-def _clear_button_pressed(event=0):
+def _clear_button_pressed(event=None):
     
     txt.delete(0, END)
     lbl.configure(text = "")
@@ -299,7 +299,7 @@ root = Tk()
 root.title("Test DinSide - v." + nVer )
 
 # Set geometry(widthxheight)
-root.geometry('400x70')
+root.geometry('') 
 
 # Set margins inside window
 root['padx']=10
@@ -334,7 +334,7 @@ txt.bind('<Return>', _input_pressed)
 #
 # Create label 
 #
-lbl = Label(root, text = "Test:, Policy: ", anchor="w", justify="left")
+lbl = Label(root, text = "", anchor="w", justify="left")
 lbl.grid(column =0, row =1,sticky=W, padx=5)
 lbl.bind('<Double-1>', _clear_button_pressed) 
 
@@ -356,10 +356,8 @@ btn2.bind('<ButtonRelease-1>', _open_button_released)
 #
 # Create button Clear
 #
-btn3 = Button(root, text = "Clear" , width=6,
-             fg = "black", command=_clear_button_pressed)
-btn3.grid(column=2, row=1, padx=5)
-
+btn3 = Button(root, text = "Clear" , width=6, fg = "black", command=_clear_button_pressed)
+btn3.grid(column=1, row=1, columnspan=2, padx=5)
 
 # Execute Tkinter
 root.mainloop()
