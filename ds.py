@@ -13,9 +13,11 @@
 #   10/12/23 merge #22 missing 'sceren' in screen file name
 #   10/12/23 fix #20 file not open, change file naming
 #   
+# v3.0
+#   11/03/23 fix #14 add text to word file
 #
 
-nVer = '2.0'
+nVer = '3.0'
 
 # Import Module
 from tkinter import *
@@ -62,7 +64,7 @@ def makescreenshotname( t, text ):
     if not text:
         text = "screen"
 
-    return   subfolder + '\\' + t.replace(':','').replace(' ','_') + "_" + text +".png"
+    return   subfolder + '\\' + t.strip().replace(':','').replace(' ','_') + "_" + text +".png"
  
 
 # ==============================================================================================================
@@ -132,7 +134,17 @@ def _input_pressed(event):
     wordname = makewordname( res )
     # set label to file name 
     lbl.configure(text = wordname)
+    
+    # define koeff from pix to char for entry widget
+    # entry widget char=6 pixels 
+    a_width = 6
+    lbl_pix = lbl.winfo_reqwidth()
+    #lbl_ch = len(lbl.cget("text") )
+    #print( "pix",lbl_pix,"ch", lbl_ch, lbl_pix/lbl_ch  ) 
+    txt_w = int(lbl.winfo_reqwidth()/a_width)
 
+    # define width in char that matches lbl width in pixels 
+    txt.config(width=max(txt_w, 40))
 
 # ==============================================================================================================
 #                   Take button 
@@ -171,9 +183,11 @@ def _take_button_released( event ):
     # take screenshot
     global wordname 
     global jpg
+    global head
 
     _input_pressed( 0 )
-    t = timestamp()
+    t = timestamp() 
+    
     jpg = makescreenshotname( t, txt.get().strip() )
     takescreenshoot( jpg )
 
@@ -187,6 +201,11 @@ def _take_button_released( event ):
 
     # save to word if needed 
     if not wordname == "":
+        comment = head.get() 
+        if( comment ):
+            t += ' ' + comment.strip()
+        print( comment )
+        
         savetoword( wordname, t, jpg )
         res = 'Saved to ' + wordname  
     else:
@@ -267,6 +286,7 @@ def _clear_button_pressed(event=None):
     txt.delete(0, END)
     lbl.configure(text = "")
     listbox.grid_remove()
+    print( '-',head.get().strip() ,'-' ) 
 
 # ==============================================================================================================
 #                   Listbox - update
@@ -303,7 +323,9 @@ def update_listbox (event=None):
     if count < 1:
         listbox.grid_remove()
     else:
-        listbox.grid(column=0, row=1)
+        listbox.config(width=max( int(lbl.winfo_reqwidth()/6),40) )
+        listbox.grid(column=0, row=2)
+
     
         
 # ==============================================================================================================
@@ -401,7 +423,9 @@ root.attributes('-topmost',True)
 # 0 [input text           ] [Take] [Open]
 # 1 [label text           ]
 #
-
+# Create an entry widget
+head = Entry(root) #,height=1) #,width=20)
+head.grid(column=0,row=0, columnspan=3, padx=5, pady=5, sticky=EW)
 
 #
 #  create input widget
@@ -410,7 +434,7 @@ root.attributes('-topmost',True)
 # Create an entry widget
 txt = Entry(root, width=40)
 # place top left
-txt.grid(column =0, row =0, padx=5, pady=5)
+txt.grid(column =0, row =1, padx=5, pady=5, sticky=W)
 # Bind to Return key
 txt.bind('<Return>', _input_pressed)
 # Bind the entry widget to the update function
@@ -427,14 +451,14 @@ txt.bind ("<FocusIn>", update_listbox)
 # Create label 
 #
 lbl = Label(root, text = "", anchor="w", justify="left")
-lbl.grid(column =0, row =1, sticky=W, padx=5)
+lbl.grid(column =0, row =2, sticky=W, padx=5)
 #lbl.bind('<Double-1>', _clear_button_pressed) # Useless
 
 #
 # Create button Take
 #
 btn1 = Button(root, text = "Take" , width=6, fg = "black")
-btn1.grid(column=1, row=0, padx=5)
+btn1.grid(column=1, row=1, padx=5)
 btn1.bind('<Button-1>', _take_button_pressed)
 btn1.bind('<ButtonRelease-1>', _take_button_released)
 
@@ -442,21 +466,21 @@ btn1.bind('<ButtonRelease-1>', _take_button_released)
 # Create button Open
 #
 btn2 = Button(root, text = "Open" , width=6, fg = "black")
-btn2.grid(column=2, row=0, padx=5)
+btn2.grid(column=2, row=1, padx=5)
 btn2.bind('<Button-1>', _open_button_pressed)
 btn2.bind('<ButtonRelease-1>', _open_button_released)
 #
 # Create button Clear
 #
 btn3 = Button(root, text = "Clear" , width=6, fg = "black", command=_clear_button_pressed)
-btn3.grid(column=1, row=1, columnspan=2, padx=5, sticky=N)
+btn3.grid(column=1, row=2, columnspan=2, padx=5, sticky=N)
 
 #
 # Create listbox
 #
 listbox = Listbox (root, width=40, height=5)
 # Pack the listbox widget
-listbox.grid(column=0, row=1, sticky=NW, padx=5, pady=5)
+listbox.grid(column=0, row=2, sticky=NW, padx=5, pady=5)
 # Bind the listbox widget to the update function
 listbox.bind ("<Return>", update_entry)
 # Bind the listbox widget to the update function
