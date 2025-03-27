@@ -15,9 +15,10 @@
 #   
 # v3.0
 #   11/03/23 fix #14 add text to word file
-#
+# v3.1
+#    27/03/25 fix #28 delete comment after screenshot
 
-nVer = '3.0'
+nVer = '3.1'
 
 # Import Module
 from tkinter import *
@@ -204,6 +205,7 @@ def _take_button_released( event ):
         comment = head.get() 
         if( comment ):
             t += ' ' + comment.strip()
+            head.delete(0,END)
         print( comment )
         
         savetoword( wordname, t, jpg )
@@ -284,6 +286,7 @@ def _open_button_released( event ):
 def _clear_button_pressed(event=None):
     
     txt.delete(0, END)
+    head.delete(0,END)
     lbl.configure(text = "")
     listbox.grid_remove()
     print( '-',head.get().strip() ,'-' ) 
