@@ -17,8 +17,10 @@
 #   11/03/23 fix #14 add text to word file
 # v3.1
 #    27/03/25 fix #28 delete comment after screenshot
+# v4.0
+#   13/05/25 add #32 add button to open folder with files
 
-nVer = '3.1'
+nVer = '4.0'
 
 # Import Module
 from tkinter import *
@@ -118,6 +120,18 @@ test = 0
 policy = 0
 wordname = ""
 jpg = ""
+
+
+# ==============================================================================================================
+#  Open Explorer 
+# ==============================================================================================================
+
+def _open_explorer():
+    folder_path = os.getcwd()  # <-- Change this to your desired folder path
+    if os.path.isdir(folder_path):
+        os.startfile(folder_path)
+    else:
+        mb.showerror("Error", f"Folder does not exist:\n{folder_path}")
 
 # ==============================================================================================================
 #                   Input 
@@ -303,7 +317,11 @@ def update_listbox (event=None):
         # Move the focus to the listbox
         listbox.grid_remove()
         return
-    
+
+    if txt.get() == current_path:
+        txt.delete(0, END)  # Clear the placeholder text
+        txt.config(fg='black')  
+
     # Clear the listbox
     listbox.delete (0, END)
     # Get the input text
@@ -435,9 +453,12 @@ head.grid(column=0,row=0, columnspan=3, padx=5, pady=5, sticky=EW)
 #
 
 # Create an entry widget
-txt = Entry(root, width=40)
+txt = Entry(root, width=40, fg='gray')
 # place top left
 txt.grid(column =0, row =1, padx=5, pady=5, sticky=W)
+# get current path
+current_path = os.getcwd()
+txt.insert(0,current_path)
 # Bind to Return key
 txt.bind('<Return>', _input_pressed)
 # Bind the entry widget to the update function
@@ -476,7 +497,15 @@ btn2.bind('<ButtonRelease-1>', _open_button_released)
 # Create button Clear
 #
 btn3 = Button(root, text = "Clear" , width=6, fg = "black", command=_clear_button_pressed)
-btn3.grid(column=1, row=2, columnspan=2, padx=5, sticky=N)
+#btn3.grid(column=1, row=2, columnspan=2, padx=5, sticky=N)
+btn3.grid(column=1, row=2, padx=5)
+
+#
+# Create button Clear
+#
+btn4 = Button(root, text = "Folder" , width=6, fg = "black", command=_open_explorer)
+btn4.grid(column=2, row=2, padx=5)
+
 
 #
 # Create listbox
